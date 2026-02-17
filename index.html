@@ -2,69 +2,62 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nanxing NPC 280 & CNC Converter</title>
-    
+    <title>Mustafayev Factory - Nanxing Converter</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
     <style>
-        :root { --primary: #005bb5; --success: #28a745; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f9; margin: 0; padding: 20px; color: #333; }
-        
-        /* Интерфейс */
-        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .header { text-align: center; border-bottom: 2px solid #eee; margin-bottom: 20px; padding-bottom: 10px; }
-        .drop-zone { border: 3px dashed var(--primary); border-radius: 10px; padding: 40px; text-align: center; cursor: pointer; transition: 0.3s; color: var(--primary); font-weight: bold; }
-        .drop-zone:hover { background: #eef6ff; }
-        .actions { margin-top: 20px; display: flex; gap: 10px; justify-content: center; }
-        
-        button { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.2s; color: white; }
-        #dl-btn { background: var(--success); display: none; }
-        #print-btn { background: #6c757d; display: none; }
-        
-        /* Стили этикетки 80x40 */
-        #labels-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-top: 30px; }
-        
-        .label { 
-            width: 80mm; height: 40mm; border: 1px solid #000; background: white;
-            padding: 3mm; box-sizing: border-box; display: flex; justify-content: space-between;
-            page-break-after: always; overflow: hidden; position: relative;
-        }
-        .info { width: 65%; display: flex; flex-direction: column; justify-content: space-around; }
-        .info .title { font-size: 14px; font-weight: bold; line-height: 1.2; }
-        .info .details { font-size: 12px; }
-        .info .prog-name { font-family: monospace; font-size: 13px; background: #eee; padding: 2px 4px; border-radius: 3px; width: fit-content; }
-        .qr-area { width: 30%; display: flex; align-items: center; justify-content: center; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #eef2f7; margin: 0; padding: 20px; }
+        .no-print { max-width: 850px; margin: 0 auto 30px; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center; }
+        .header-top { color: #1a237e; margin-bottom: 20px; }
+        .drop-zone { border: 3px dashed #1a237e; padding: 50px; text-align: center; color: #1a237e; cursor: pointer; border-radius: 15px; font-weight: bold; background: #f8f9ff; transition: 0.3s; }
+        .drop-zone:hover { background: #e8eaff; }
+        .controls { margin-top: 25px; display: flex; gap: 15px; justify-content: center; }
+        button { padding: 12px 25px; cursor: pointer; border: none; border-radius: 6px; font-weight: bold; color: white; transition: 0.2s; }
+        .btn-zip { background: #2e7d32; } .btn-zip:hover { background: #1b5e20; }
+        .btn-print { background: #1565c0; } .btn-print:hover { background: #0d47a1; }
 
-        /* Настройки печати */
+        /* ЭТИКЕТКА 80x40 ММ */
+        #labels-container { display: block; }
+        .label {
+            width: 80mm; height: 40mm; padding: 2mm; box-sizing: border-box;
+            background: white; border: 1px solid #ccc; position: relative;
+            display: flex; page-break-after: always; color: black; margin: 10px auto;
+        }
+
+        .left-side { width: 54mm; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid #000; padding-right: 2mm; }
+        .factory-name { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: #000; border-bottom: 1px solid #000; padding-bottom: 2px; }
+        .part-name { font-size: 13px; font-weight: bold; margin-top: 4px; height: 32px; overflow: hidden; }
+        .part-size { font-size: 20px; font-weight: 900; margin: 2px 0; }
+        .part-meta { font-size: 10px; font-weight: bold; }
+        .prog-box { font-family: monospace; font-size: 12px; background: #000; color: #fff; padding: 2px 6px; width: fit-content; }
+
+        .right-side { width: 22mm; display: flex; align-items: center; justify-content: center; }
+        .qr-wrap { background: #fff; }
+
         @media print {
             body { background: white; padding: 0; margin: 0; }
             .no-print { display: none; }
-            #labels-container { display: block; margin: 0; }
-            .label { margin: 0; border: none; width: 80mm; height: 40mm; }
+            .label { border: none; margin: 0; width: 80mm; height: 40mm; }
             @page { size: 80mm 40mm; margin: 0; }
         }
     </style>
 </head>
 <body>
 
-<div class="container no-print">
-    <div class="header">
-        <h1>GibLab Postprocessor (Nanxing)</h1>
-        <p>Генерация ЧПУ-файлов и этикеток 80x40 с QR-кодом</p>
+<div class="no-print">
+    <div class="header-top">
+        <h1 style="margin:0">Mustafayev Factory</h1>
+        <p>Система подготовки данных Nanxing (NPC 280 / NCG / NCB)</p>
     </div>
-
-    <div class="drop-zone" id="drop-zone">
-        Перетащите файл .project сюда или нажмите для выбора
-        <input type="file" id="file-input" style="display:none" accept=".project">
-    </div>
-
-    <div id="status" style="text-align:center; margin: 15px; font-weight: bold;"></div>
-
-    <div class="actions">
-        <button id="dl-btn">Скачать пакет (.ZIP)</button>
-        <button id="print-btn" onclick="window.print()">Печать этикеток (80x40)</button>
+    
+    <div class="drop-zone" id="drop-zone">Перетащите сюда файл .project</div>
+    <input type="file" id="file-input" style="display:none" accept=".project">
+    
+    <div id="status" style="margin:20px; font-weight:bold; color: #2e7d32;"></div>
+    
+    <div class="controls">
+        <button id="btn-zip" class="btn-zip" style="display:none">Скачать ZIP для станков</button>
+        <button id="btn-print" class="btn-print" style="display:none" onclick="window.print()">Печать этикеток (80x40)</button>
     </div>
 </div>
 
@@ -74,116 +67,87 @@
     const fileInput = document.getElementById('file-input');
     const dropZone = document.getElementById('drop-zone');
     const status = document.getElementById('status');
-    const dlBtn = document.getElementById('dl-btn');
-    const printBtn = document.getElementById('print-btn');
-    const labelsContainer = document.getElementById('labels-container');
-    
-    let zipResult = null;
+    const btnZip = document.getElementById('btn-zip');
+    const btnPrint = document.getElementById('btn-print');
+    const container = document.getElementById('labels-container');
+
+    let zipBlob = null;
 
     dropZone.onclick = () => fileInput.click();
     fileInput.onchange = (e) => handleFile(e.target.files[0]);
 
     async function handleFile(file) {
         if (!file) return;
-        status.innerText = "Обработка файла...";
-        labelsContainer.innerHTML = "";
+        status.innerText = "Обработка данных Mustafayev Factory...";
+        container.innerHTML = "";
         
         const reader = new FileReader();
-        // Читаем в кодировке windows-1251, как в GibLab
         reader.readAsText(file, "windows-1251");
 
         reader.onload = async (e) => {
-            try {
-                const parser = new DOMParser();
-                const xml = parser.parseFromString(e.target.result, "text/xml");
-                
-                const zip = new JSZip();
-                // \uFEFF - это BOM для правильного открытия CSV в Excel
-                let csv = "\uFEFFНазвание;Длина;Ширина;Кол-во;Материал;Программа\n";
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(e.target.result, "text/xml");
+            const zip = new JSZip();
+            let csv = "\uFEFFНазвание;Длина;Ширина;Кол-во;Материал;Программа\n";
 
-                // 1. Обработка всех деталей для списка раскроя
-                const parts = xml.getElementsByTagName("part");
-                for (let p of parts) {
-                    const id = p.getAttribute('id');
-                    const name = p.getAttribute('name') || "Деталь";
-                    const dw = p.getAttribute('dw') || "0";
-                    const dl = p.getAttribute('dl') || "0";
-                    const count = p.getAttribute('count') || "1";
-                    const progName = `P${id}.nc`;
+            const parts = xml.getElementsByTagName("part");
+            for (let p of parts) {
+                const id = p.getAttribute('id');
+                const name = p.getAttribute('name') || "Без названия";
+                const dw = Math.round(parseFloat(p.getAttribute('dw')) || 0);
+                const dl = Math.round(parseFloat(p.getAttribute('dl')) || 0);
+                const count = p.getAttribute('count') || "1";
+                const progName = `P${id}.nc`;
 
-                    csv += `${name};${dw};${dl};${count};ЛДСП;${progName}\n`;
-                    
-                    // Создаем этикетку в интерфейсе
-                    createLabel(name, `${dw} x ${dl}`, progName);
-                }
-                zip.file("cut_list_NPC280.csv", csv);
-
-                // 2. Генерация G-кода для каждой присадки (XNC)
-                const operations = xml.querySelectorAll("operation[typeId='XNC']");
-                operations.forEach(op => {
-                    const partId = op.querySelector('part').getAttribute('id');
-                    const progXmlStr = op.getAttribute('program');
-                    const pDoc = new DOMParser().parseFromString(progXmlStr, "text/xml");
-                    
-                    let gcode = `% \nO${partId}\nG90 G21 G17\n`;
-                    
-                    // Парсим отверстия в пласть (bt - top, bb - bottom)
-                    const holes = pDoc.querySelectorAll("bt, bb");
-                    holes.forEach(h => {
-                        const x = h.getAttribute('x');
-                        const y = h.getAttribute('y');
-                        const dp = h.getAttribute('dp') || "15";
-                        gcode += `G0 X${x} Y${y}\nG1 Z-${dp} F600\nG0 Z5\n`;
-                    });
-
-                    gcode += "M30\n%";
-                    zip.file(`programs/P${partId}.nc`, gcode);
-                });
-
-                zipResult = await zip.generateAsync({type: "blob"});
-                status.style.color = "green";
-                status.innerText = "Файлы успешно сформированы!";
-                dlBtn.style.display = "block";
-                printBtn.style.display = "block";
-
-            } catch (err) {
-                status.style.color = "red";
-                status.innerText = "Ошибка: " + err.message;
-                console.error(err);
+                csv += `${name};${dw};${dl};${count};ЛДСП;${progName}\n`;
+                renderLabel(name, dw, dl, count, progName);
             }
+            zip.file("cut_list_Mustafayev.csv", csv);
+
+            // Генерация ЧПУ программ (XNC)
+            xml.querySelectorAll("operation[typeId='XNC']").forEach(op => {
+                const pId = op.querySelector('part').getAttribute('id');
+                const pDoc = new DOMParser().parseFromString(op.getAttribute('program'), "text/xml");
+                let gcode = `% \nO${pId}\nG90 G21 G17\n`;
+                pDoc.querySelectorAll("bt, bb").forEach(h => {
+                    gcode += `G0 X${h.getAttribute('x')} Y${h.getAttribute('y')}\nG1 Z-${h.getAttribute('dp') || 15} F800\nG0 Z5\n`;
+                });
+                gcode += "M30\n%";
+                zip.file(`programs/P${pId}.nc`, gcode);
+            });
+
+            zipBlob = await zip.generateAsync({type: "blob"});
+            status.innerText = "Проект успешно загружен. Этикетки готовы к печати.";
+            btnZip.style.display = "block";
+            btnPrint.style.display = "block";
         };
     }
 
-    function createLabel(name, size, prog) {
+    function renderLabel(name, w, l, qty, prog) {
         const div = document.createElement('div');
         div.className = 'label';
         div.innerHTML = `
-            <div class="info">
-                <div class="title">${name}</div>
-                <div class="details">Размер: ${size}</div>
-                <div class="details">Материал: ЛДСП 16мм</div>
-                <div class="prog-name">Пр: ${prog}</div>
+            <div class="left-side">
+                <div class="factory-name">Mustafayev Factory</div>
+                <div class="part-name">${name}</div>
+                <div class="part-size">${w} x ${l}</div>
+                <div class="part-meta">Кол-во: ${qty} шт. | ЛДСП 16мм</div>
+                <div class="prog-box">${prog}</div>
             </div>
-            <div class="qr-area" id="qr-box-${prog}"></div>
+            <div class="right-side">
+                <div id="qr-${prog}" class="qr-wrap"></div>
+            </div>
         `;
-        labelsContainer.appendChild(div);
-
-        // Генерация QR-кода
-        new QRCode(document.getElementById(`qr-box-${prog}`), {
-            text: prog,
-            width: 85,
-            height: 85,
-            correctLevel : QRCode.CorrectLevel.M
-        });
+        container.appendChild(div);
+        new QRCode(document.getElementById(`qr-${prog}`), { text: prog, width: 80, height: 80 });
     }
 
-    dlBtn.onclick = () => {
+    btnZip.onclick = () => {
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(zipResult);
-        a.download = "Nanxing_Project.zip";
+        a.href = URL.createObjectURL(zipBlob);
+        a.download = "Mustafayev_Factory_Export.zip";
         a.click();
     };
 </script>
-
 </body>
 </html>
