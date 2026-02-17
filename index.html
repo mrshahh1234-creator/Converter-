@@ -2,41 +2,41 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Mustafayev Factory - Label Expert 80x40</title>
+    <title>Mustafayev Factory - Visual Label Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
-        .no-print { max-width: 800px; margin: 0 auto 20px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
-        .drop-zone { border: 2px dashed #1a237e; padding: 30px; cursor: pointer; background: #f8f9ff; border-radius: 8px; font-weight: bold; color: #1a237e; }
+        body { font-family: 'Arial', sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .no-print { max-width: 800px; margin: 0 auto 20px; background: white; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .drop-zone { border: 2px dashed #1a237e; padding: 30px; cursor: pointer; background: #f8f9ff; border-radius: 8px; color: #1a237e; font-weight: bold; }
         
-        /* СТИЛИ ЭТИКЕТКИ 80x40 */
         #labels-container { display: block; }
         .label {
             width: 80mm; height: 40mm; padding: 1.5mm 3mm; box-sizing: border-box;
-            background: white; border: 1px solid #ddd; position: relative;
+            background: white; border: 1px solid #000; position: relative;
             display: flex; page-break-after: always; color: black; margin: 10px auto;
             overflow: hidden;
         }
 
-        .left-side { width: 55mm; display: flex; flex-direction: column; justify-content: space-between; }
-        .brand { font-size: 10px; font-weight: 900; border-bottom: 1px solid #000; padding-bottom: 1px; margin-bottom: 2px; }
-        .name { font-size: 12px; font-weight: bold; line-height: 1.2; height: 2.4em; overflow: hidden; }
-        .size { font-size: 22px; font-weight: 900; margin: 1mm 0; }
-        .material { font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .left-side { width: 52mm; display: flex; flex-direction: column; justify-content: space-between; }
+        .brand { font-size: 10px; font-weight: 900; border-bottom: 1px solid #000; padding-bottom: 1px; }
+        .name { font-size: 11px; font-weight: bold; height: 2.4em; overflow: hidden; margin: 1mm 0; }
+        .size-row { font-size: 18px; font-weight: 900; border-top: 1px solid #eee; }
         
-        .edge-table { font-size: 9px; margin-top: 2px; border-top: 1px solid #ccc; padding-top: 2px; }
-        .edge-row { display: flex; gap: 5px; font-weight: bold; }
+        /* Контейнер для чертежа */
+        .drawing-container { width: 100%; height: 18mm; border: 1px solid #eee; position: relative; display: flex; align-items: center; justify-content: center; background: #fafafa; }
+        canvas { max-width: 100%; max-height: 100%; }
 
-        .prog-id { font-family: monospace; font-size: 11px; background: #000; color: #fff; padding: 1px 4px; width: fit-content; margin-top: 2px; }
+        .footer { display: flex; justify-content: space-between; align-items: flex-end; font-size: 9px; font-weight: bold; }
+        .prog-id { font-family: monospace; font-size: 11px; background: #000; color: #fff; padding: 1px 4px; }
 
-        .right-side { width: 20mm; display: flex; align-items: center; justify-content: center; }
-        .qr-box { width: 18mm; height: 18mm; }
+        .right-side { width: 22mm; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .qr-box { width: 20mm; height: 20mm; }
 
         @media print {
             body { background: white; padding: 0; margin: 0; }
             .no-print { display: none; }
-            .label { border: none; margin: 0; width: 80mm; height: 40mm; }
+            .label { border: 1px solid #000; margin: 0; width: 80mm; height: 40mm; }
             @page { size: 80mm 40mm; margin: 0; }
         }
     </style>
@@ -44,13 +44,13 @@
 <body>
 
 <div class="no-print">
-    <h2 style="color:#1a237e">Mustafayev Factory</h2>
-    <div class="drop-zone" id="drop-zone">Загрузить .project файл</div>
+    <h1 style="color:#1a237e">Mustafayev Factory</h1>
+    <div class="drop-zone" id="drop-zone">Перетащите сюда файл .project</div>
     <input type="file" id="file-input" style="display:none" accept=".project">
     <div id="status" style="margin:15px; font-weight:bold;"></div>
     <div id="actions" style="display:none">
-        <button onclick="window.print()" style="padding:10px 20px; background:#1565c0; color:white; border:none; border-radius:4px; cursor:pointer;">Печать (80x40)</button>
-        <button id="dl-zip" style="padding:10px 20px; background:#2e7d32; color:white; border:none; border-radius:4px; cursor:pointer; margin-left:10px;">Скачать ZIP</button>
+        <button onclick="window.print()" style="padding:10px 20px; background:#1565c0; color:white; border:none; cursor:pointer; font-weight:bold;">ПЕЧАТЬ</button>
+        <button id="dl-zip" style="padding:10px 20px; background:#2e7d32; color:white; border:none; cursor:pointer; margin-left:10px;">ZIP ДЛЯ ЧПУ</button>
     </div>
 </div>
 
@@ -71,97 +71,130 @@
 
     async function handleFile(file) {
         if (!file) return;
-        status.innerText = "Обработка...";
+        status.innerText = "Генерация чертежей...";
         labelsContainer.innerHTML = "";
-        
         const reader = new FileReader();
         reader.readAsText(file, "windows-1251");
 
         reader.onload = async (e) => {
-            const xml = new DOMParser().parseFromString(e.target.result, "text/xml");
+            const parser = new DOMParser();
+            const xml = parser.parseFromString(e.target.result, "text/xml");
             const zip = new JSZip();
-            
-            // Собираем данные о материалах из проекта
-            const materialName = xml.querySelector('good')?.getAttribute('name') || "ЛДСП 16мм";
-            
-            // Находим все детали
             const parts = xml.getElementsByTagName("part");
             const xncOps = Array.from(xml.querySelectorAll("operation[typeId='XNC']"));
-            
-            // CSV заголовок
-            let csv = "\uFEFFНазвание;Длина;Ширина;Кол-во;Материал;Программа\n";
 
             for (let p of parts) {
                 const id = p.getAttribute('id');
-                const name = p.getAttribute('name');
-                const dw = Math.round(parseFloat(p.getAttribute('dw')));
-                const dl = Math.round(parseFloat(p.getAttribute('dl')));
-                const count = p.getAttribute('count');
+                const name = p.getAttribute('name') || "Деталь";
+                const dw = parseFloat(p.getAttribute('dw')) || 0;
+                const dl = parseFloat(p.getAttribute('dl')) || 0;
                 const progName = `P${id}.nc`;
 
-                // Проверяем наличие присадки для этой детали
-                const hasDrill = xncOps.some(op => op.querySelector('part')?.getAttribute('id') === id);
+                // Ищем программу присадки
+                const op = xncOps.find(o => o.querySelector('part')?.getAttribute('id') === id);
+                const progXmlStr = op ? op.getAttribute('program') : null;
 
-                // Кромка (упрощенно из атрибутов проекта elt, elb, ell, elr)
-                const edgeT = p.getAttribute('elt') ? "К" : "-";
-                const edgeB = p.getAttribute('elb') ? "К" : "-";
-                const edgeL = p.getAttribute('ell') ? "К" : "-";
-                const edgeR = p.getAttribute('elr') ? "К" : "-";
+                // Кромка (1 - есть, 0 или null - нет)
+                const edges = {
+                    top: p.getAttribute('elt') && p.getAttribute('elt') !== "0",
+                    bottom: p.getAttribute('elb') && p.getAttribute('elb') !== "0",
+                    left: p.getAttribute('ell') && p.getAttribute('ell') !== "0",
+                    right: p.getAttribute('elr') && p.getAttribute('elr') !== "0"
+                };
 
-                csv += `${name};${dw};${dl};${count};${materialName};${hasDrill ? progName : ""}\n`;
-
-                renderLabel(name, dw, dl, count, materialName, hasDrill ? progName : null, {edgeT, edgeB, edgeL, edgeR});
+                renderLabel(id, name, dw, dl, progXmlStr, progName, edges);
             }
 
-            // G-код только для тех, у кого есть XNC
+            // G-код для ZIP
             xncOps.forEach(op => {
                 const pId = op.querySelector('part').getAttribute('id');
                 const pDoc = new DOMParser().parseFromString(op.getAttribute('program'), "text/xml");
                 let gcode = `% \nO${pId}\nG90 G21 G17\n`;
-                pDoc.querySelectorAll("bt, bb").forEach(h => {
+                pDoc.querySelectorAll("bt, bb, bl, br").forEach(h => {
                     gcode += `G0 X${h.getAttribute('x')} Y${h.getAttribute('y')}\nG1 Z-${h.getAttribute('dp') || 15} F800\nG0 Z5\n`;
                 });
                 gcode += "M30\n%";
                 zip.file(`programs/P${pId}.nc`, gcode);
             });
 
-            zip.file("cut_list.csv", csv);
             zipBlob = await zip.generateAsync({type: "blob"});
-            
-            status.innerText = `Загружено деталей: ${parts.length}`;
+            status.innerText = "Готово!";
             actions.style.display = "block";
         };
     }
 
-    function renderLabel(name, w, l, qty, mat, prog, edges) {
+    function renderLabel(id, name, dw, dl, progXmlStr, progName, edges) {
         const div = document.createElement('div');
         div.className = 'label';
         
-        let qrHtml = prog ? `<div id="qr-${prog}" class="qr-box"></div>` : `<div style="font-size:9px; color:#ccc; text-align:center">БЕЗ<br>ПРИСАДКИ</div>`;
-
         div.innerHTML = `
             <div class="left-side">
                 <div class="brand">Mustafayev Factory</div>
                 <div class="name">${name}</div>
-                <div class="size">${w} x ${l}</div>
-                <div class="material">${mat} | Кол-во: ${qty}</div>
-                <div class="edge-table">
-                    Кромка: L:${edges.edgeT}${edges.edgeB} | W:${edges.edgeL}${edges.edgeR}
+                <div class="size-row">${Math.round(dw)} x ${Math.round(dl)}</div>
+                <div class="drawing-container">
+                    <canvas id="canvas-${id}"></canvas>
                 </div>
-                ${prog ? `<div class="prog-id">${prog}</div>` : ''}
+                <div class="footer">
+                    <span>${progXmlStr ? 'ПРИСАДКА' : 'БЕЗ ПРИСАДКИ'}</span>
+                    ${progXmlStr ? `<div class="prog-id">${progName}</div>` : ''}
+                </div>
             </div>
             <div class="right-side">
-                ${qrHtml}
+                ${progXmlStr ? `<div id="qr-${id}" class="qr-box"></div>` : ''}
             </div>
         `;
         labelsContainer.appendChild(div);
 
-        if (prog) {
-            new QRCode(document.getElementById(`qr-${prog}`), {
-                text: prog,
-                width: 68, // Уменьшен до ~18мм
-                height: 68,
-                correctLevel: QRCode.CorrectLevel.M
+        // Рисуем деталь
+        drawPart(id, dw, dl, progXmlStr, edges);
+
+        // Генерируем QR
+        if (progXmlStr) {
+            new QRCode(document.getElementById(`qr-${id}`), { text: progName, width: 75, height: 75 });
+        }
+    }
+
+    function drawPart(id, dw, dl, progXmlStr, edges) {
+        const canvas = document.getElementById(`canvas-${id}`);
+        const ctx = canvas.getContext('2d');
+        
+        const padding = 10;
+        const scale = Math.min((180 - padding*2) / dw, (80 - padding*2) / dl);
+        
+        canvas.width = dw * scale + padding * 2;
+        canvas.height = dl * scale + padding * 2;
+
+        const w = dw * scale;
+        const h = dl * scale;
+        const x0 = padding;
+        const y0 = padding;
+
+        // Рисуем основной контур
+        ctx.strokeStyle = "#ccc";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x0, y0, w, h);
+
+        // Рисуем кромку (жирные линии)
+        ctx.strokeStyle = "#000";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        if (edges.top) { ctx.moveTo(x0, y0); ctx.lineTo(x0 + w, y0); }
+        if (edges.bottom) { ctx.moveTo(x0, y0 + h); ctx.lineTo(x0 + w, y0 + h); }
+        if (edges.left) { ctx.moveTo(x0, y0); ctx.lineTo(x0, y0 + h); }
+        if (edges.right) { ctx.moveTo(x0 + w, y0); ctx.lineTo(x0 + w, y0 + h); }
+        ctx.stroke();
+
+        // Рисуем отверстия
+        if (progXmlStr) {
+            const pDoc = new DOMParser().parseFromString(progXmlStr, "text/xml");
+            ctx.fillStyle = "red";
+            pDoc.querySelectorAll("bt, bb, bl, br").forEach(hole => {
+                const hx = parseFloat(hole.getAttribute('x')) * scale + x0;
+                const hy = parseFloat(hole.getAttribute('y')) * scale + y0;
+                ctx.beginPath();
+                ctx.arc(hx, hy, 2, 0, Math.PI * 2);
+                ctx.fill();
             });
         }
     }
@@ -169,7 +202,7 @@
     dlZip.onclick = () => {
         const a = document.createElement('a');
         a.href = URL.createObjectURL(zipBlob);
-        a.download = "Mustafayev_Factory_Project.zip";
+        a.download = "Mustafayev_Production.zip";
         a.click();
     };
 </script>
